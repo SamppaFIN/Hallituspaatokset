@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hallituslupaukset 2000–2025 — Faktantarkistus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1209;
+  --ink-muted: #4a3f30;
+  --ink-faint: #8a7a68;
+  --paper: #f5f0e8;
+  --paper-warm: #ede8dc;
+  --paper-dark: #e0d9cc;
+  --red: #c0392b;
+  --red-light: #fce8e6;
+  --amber: #d4810b;
+  --amber-light: #fdf3e3;
+  --green: #1a7a45;
+  --green-light: #e8f5ee;
+  --blue: #1a4a8a;
+  --blue-light: #e8f0fa;
+  --stamp-red: #c0392b;
+  --stamp-green: #1a7a45;
+  --border: rgba(26,18,9,0.15);
+  --border-med: rgba(26,18,9,0.25);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* HEADER */
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 3rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.masthead::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--red) 0, var(--red) 8px, transparent 8px, transparent 16px);
+}
+.masthead-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(245,240,232,0.5);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.masthead-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.masthead-title span { color: var(--red); font-style: italic; }
+.masthead-sub {
+  font-size: 14px;
+  color: rgba(245,240,232,0.65);
+  max-width: 560px;
+  margin: 1rem auto 0;
+  line-height: 1.7;
+}
+.masthead-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(245,240,232,0.1);
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  display: block;
+}
+.stat-num.red { color: var(--red); }
+.stat-num.amber { color: #e8a020; }
+.stat-num.green { color: #4aaf78; }
+.stat-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(245,240,232,0.5);
+  text-transform: uppercase;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* METHODOLOGY NOTE */
+.method-bar {
+  background: var(--ink);
+  color: rgba(245,240,232,0.5);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 0.6rem 2rem;
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+}
+.method-bar span::before { content: '▸ '; color: var(--red); }
+
+/* FILTER BAR */
+.filter-section {
+  background: var(--paper-warm);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.filter-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-med);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.filter-btn:hover { background: var(--paper-dark); }
+.filter-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.filter-divider { width: 1px; background: var(--border); height: 24px; }
+
+/* LEGEND */
+.legend {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-left: auto;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--ink-faint);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* MAIN CONTENT */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* GOVERNMENT SECTION */
+.gov-section { margin-bottom: 3rem; }
+.gov-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--ink);
+}
+.gov-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.gov-period {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.gov-pm {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-left: auto;
+}
+.gov-party {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+/* DECISION CARDS GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+
+/* DECISION CARD */
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 4px 4px 0 rgba(26,18,9,0.08); }
+
+.card-stripe {
+  height: 4px;
+  width: 100%;
+}
+.stripe-red { background: var(--red); }
+.stripe-amber { background: var(--amber); }
+.stripe-green { background: var(--green); }
+
+.card-body { padding: 1.25rem; }
+
+.card-topic {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.5rem;
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+
+/* PROMISE VS REALITY */
+.pvr { margin: 1rem 0; }
+.pvr-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 13px;
+  align-items: start;
+}
+.pvr-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-top: 2px;
+}
+.label-promise { color: var(--blue); }
+.label-reality { color: var(--red); }
+.label-science { color: var(--green); }
+.pvr-text { line-height: 1.5; }
+
+/* TRUTH-O-METER */
+.meter-wrap { margin: 1rem 0; }
+.meter-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+.meter-pct {
+  font-weight: 600;
+  font-size: 14px;
+}
+.pct-red { color: var(--red); }
+.pct-amber { color: var(--amber); }
+.pct-green { color: var(--green); }
+
+.meter-bar {
+  height: 6px;
+  background: var(--paper-dark);
+  border-radius: 0;
+  overflow: hidden;
+}
+.meter-fill {
+  height: 100%;
+  border-radius: 0;
+  transition: width 0.8s ease;
+}
+.fill-red { background: var(--red); }
+.fill-amber { background: var(--amber); }
+.fill-green { background: var(--green); }
+
+/* BENEFICIARIES */
+.beneficiaries {
+  background: var(--paper-warm);
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  margin: 1rem 0;
+  border-radius: 2px;
+}
+.benef-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  margin-bottom: 0.5rem;
+}
+.benef-list {
+  list-style: none;
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.benef-tag {
+  background: var(--amber-light);
+  border: 1px solid rgba(212,129,11,0.2);
+  color: var(--amber);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* VERDICT STAMPS */
+.verdict-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.verdict-block { flex: 1; min-width: 130px; }
+.verdict-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+.verdict-truth { color: var(--green); }
+.verdict-lied { color: var(--red); }
+.verdict-names {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.name-tag {
+  display: inline-block;
+  font-style: italic;
+}
+
+/* STAMP */
+.stamp {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  transform: rotate(12deg);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border: 2px solid;
+  text-transform: uppercase;
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.stamp-epäonnistui { color: var(--red); border-color: var(--red); }
+.stamp-osittain { color: var(--amber); border-color: var(--amber); }
+.stamp-toteutui { color: var(--green); border-color: var(--green); }
+.stamp-kesken { color: var(--blue); border-color: var(--blue); }
+
+/* HIDDEN CARD */
+.card.hidden { display: none; }
+
+/* CITATION */
+.citation {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-faint);
+  border-left: 2px solid var(--border);
+  padding-left: 8px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* AI CHAT SECTION */
+.ai-section {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 3rem 2rem;
+  margin-top: 3rem;
+}
+.ai-inner { max-width: 760px; margin: 0 auto; }
+.ai-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.ai-sub {
+  font-size: 13px;
+  color: rgba(245,240,232,0.55);
+  margin-bottom: 1.5rem;
+}
+.ai-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+.suggestion-btn {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  padding: 6px 12px;
+  background: rgba(245,240,232,0.08);
+  border: 1px solid rgba(245,240,232,0.15);
+  color: rgba(245,240,232,0.7);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+.suggestion-btn:hover {
+  background: rgba(245,240,232,0.15);
+  color: var(--paper);
+}
+.ai-input-row {
+  display: flex;
+  gap: 8px;
+}
+.ai-input {
+  flex: 1;
+  background: rgba(245,240,232,0.06);
+  border: 1px solid rgba(245,240,232,0.2);
+  color: var(--paper);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
+  outline: none;
+}
+.ai-input::placeholder { color: rgba(245,240,232,0.3); }
+.ai-input:focus { border-color: rgba(245,240,232,0.4); }
+.ai-send {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.ai-send:hover { opacity: 0.85; }
+.ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.ai-messages {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.ai-msg {
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 1rem;
+  border-radius: 2px;
+}
+.ai-msg-user {
+  background: rgba(245,240,232,0.06);
+  border: 1px solid rgba(245,240,232,0.1);
+  color: rgba(245,240,232,0.7);
+  font-style: italic;
+}
+.ai-msg-ai {
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.2);
+  color: var(--paper);
+}
+.ai-msg-ai strong { color: #e8a020; }
+.ai-thinking {
+  color: rgba(245,240,232,0.4);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* FOOTER */
+footer {
+  background: var(--paper-dark);
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 2;
+}
+footer a { color: var(--ink-muted); }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .masthead-stats { gap: 1.5rem; }
+  .filter-section { padding: 0.75rem 1rem; }
+  .legend { display: none; }
+}
+
+/* count display */
+.result-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-bottom: 1.5rem;
+}
+.result-count span { color: var(--ink); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-label">Tutkiva data-analyysi · Suomen hallituslupaukset</div>
+  <h1 class="masthead-title">Lupaukset &amp; <span>Todellisuus</span></h1>
+  <p class="masthead-sub">Systemaattinen analyysi Suomen hallituspäätöksistä 2003–2025. Jokainen päätös on asetettu vastakkain tieteellisten tutkimusten, toteutuneen kehityksen ja hyötyjäanalyysin kanssa.</p>
+  <div class="masthead-stats">
+    <div class="stat-item">
+      <span class="stat-num red">6</span>
+      <span class="stat-label">Epäonnistui</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num amber">4</span>
+      <span class="stat-label">Osittain</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num green">3</span>
+      <span class="stat-label">Toteutui</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" style="color:#6aafda">2</span>
+      <span class="stat-label">Kesken</span>
+    </div>
+  </div>
+</div>
+
+<div class="method-bar">
+  <span>Lupausprosentti = toteutuneet mittarit / luvatut mittarit</span>
+  <span>Tieteellinen lähde vaaditaan jokaiseen analyysiin</span>
+  <span>Hyötyjä = tilastollisesti merkittävä tulojakauman muutos</span>
+  <span>Tietolähteet: THL, VATT, ETLA, PTT, IMF, Tilastokeskus, VTV</span>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-section" id="filterBar">
+  <span class="filter-label">Hallitus</span>
+  <div class="filter-group" id="govFilter">
+    <button class="filter-btn active" data-gov="all" onclick="filterCards('gov','all')">Kaikki</button>
+    <button class="filter-btn" data-gov="vanhanen" onclick="filterCards('gov','vanhanen')">Vanhanen</button>
+    <button class="filter-btn" data-gov="katainen" onclick="filterCards('gov','katainen')">Katainen</button>
+    <button class="filter-btn" data-gov="sipila" onclick="filterCards('gov','sipila')">Sipilä</button>
+    <button class="filter-btn" data-gov="marin" onclick="filterCards('gov','marin')">Marin</button>
+    <button class="filter-btn" data-gov="orpo" onclick="filterCards('gov','orpo')">Orpo</button>
+  </div>
+  <div class="filter-divider"></div>
+  <span class="filter-label">Tulos</span>
+  <div class="filter-group" id="statusFilter">
+    <button class="filter-btn active" data-status="all" onclick="filterCards('status','all')">Kaikki</button>
+    <button class="filter-btn" data-status="red" onclick="filterCards('status','red')">Epäonnistui</button>
+    <button class="filter-btn" data-status="amber" onclick="filterCards('status','amber')">Osittain</button>
+    <button class="filter-btn" data-status="green" onclick="filterCards('status','green')">Toteutui</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Epäonnistui &lt;40%</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Osittain 40–70%</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Toteutui &gt;70%</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent">
+
+<div class="result-count" id="resultCount">Näytetään <span id="countNum">15</span> päätöstä</div>
+
+<!-- ======================== VANHANEN ======================== -->
+<section class="gov-section" data-gov="vanhanen">
+  <div class="gov-header">
+    <h2 class="gov-name">Vanhanen I–II</h2>
+    <span class="gov-period">2003–2010</span>
+    <span class="gov-pm">PM: Matti Vanhanen (Kesk)</span>
+    <span class="gov-party">Kesk + SDP / Kok</span>
+  </div>
+  <div class="cards-grid">
+
+    <!-- CARD 1 -->
+    <div class="card" data-gov="vanhanen" data-status="amber">
+      <div class="card-stripe stripe-amber"></div>
+      <div class="stamp stamp-osittain">Osittain</div>
+      <div class="card-body">
+        <div class="card-topic">Yritysverotus</div>
+        <h3 class="card-title">Yhteisöveron alennus 29 % → 26 %</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">Veronkevennys lisää investointeja, luo 30 000 uutta työpaikkaa ja kasvattaa veropohjaa dynaamisilla vaikutuksilla.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Yritysinvestoinnit kasvoivat maltillisesti, mutta hyöty valui pääosin osinkoihin – ei investointeihin. Verohyöty jakautui epätasaisesti.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">VATT 2010: "Yhteisöveronalennuksen suurin hyötyjä oli pääoman omistajat, ei työ." Investointijousto oletettua matalampi.</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-amber">45 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-amber" style="width:45%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Suuryritysten omistajat</span></li>
+            <li><span class="benef-tag">Pörssiyritykset</span></li>
+            <li><span class="benef-tag">Ulkomaiset sijoittajat</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Palkansaajien tutkimuslaitos</span> – varoitti hyötyjen jakautumisesta epätasaisesti jo etukäteen</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Matti Vanhanen, EK:n Leif Fagernäs</span> – lupasivat dynaamisia vaikutuksia, joita ei dokumentoitu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="card" data-gov="vanhanen" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Asuntopolitiikka</div>
+        <h3 class="card-title">Asuntotuotannon kasvattaminen pääkaupunkiseudulla</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">Kaavoitusta lisätään, asuntotuotanto kasvaa 7 000 asuntoon vuodessa ja hinnat tasaantuvat kohtuulliselle tasolle.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Asuntohinnat nousivat Helsingissä 2003–2010 yli 50 %. Tuotanto jäi tavoitteesta. Segregaatio syventyi.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">SYKE 2011: "Kaavoitustavoitteet toteutuivat vain 60 % tasolla. Asuntotuotannon rakenteelliset esteet tunnistettiin mutta ei purettu."</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">20 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:20%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Asuntosijoittajat</span></li>
+            <li><span class="benef-tag">Rakennusliikkeet</span></li>
+            <li><span class="benef-tag">Asuntojen omistajat</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Arkkitehtiliitto</span> – varoitti kaavoitusesteiden vaikutuksesta hintoihin</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Jan Vapaavuori (Kok, asuntoministeri)</span> – lupasi hintakehityksen tasaantumisen, jota ei tapahtunut</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======================== KATAINEN ======================== -->
+<section class="gov-section" data-gov="katainen">
+  <div class="gov-header">
+    <h2 class="gov-name">Katainen / Stubb</h2>
+    <span class="gov-period">2011–2015</span>
+    <span class="gov-pm">PM: Jyrki Katainen → Alexander Stubb (Kok)</span>
+    <span class="gov-party">6 puolueen koalitio</span>
+  </div>
+  <div class="cards-grid">
+
+    <!-- CARD 3 -->
+    <div class="card" data-gov="katainen" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Talouspolitiikka</div>
+        <h3 class="card-title">Rakennepaketti: talous tasapainoon kiristämällä</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Velanotto loppuu vuoteen 2015 mennessä. Talouskasvu käynnistyy rakenneuudistuksilla. Julkinen talous tasapainossa hallituskauden päättyessä."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">BKT supistui 2012, 2013 ja 2014 (-1,4 %, -0,8 %, -0,6 %). Velka kasvoi. Suomi ajautui taantumaan juuri kun muut maat kasvoivat.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">IMF 2014 Article IV: "Ennenaikainen finanssipolitiikan kiristäminen heikensi kasvua merkittävästi." Blanchard & Leigh (IMF 2013): fiskaalimultiplier aliarvioitu.</span>
+            <div class="citation">Blanchard & Leigh (2013) "Growth Forecast Errors and Fiscal Multipliers", IMF WP/13/1</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">10 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:10%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Finanssimarkkinat</span></li>
+            <li><span class="benef-tag">Luottoluokittajat</span></li>
+            <li><span class="benef-tag">EKP / Troikka</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Paul Krugman</span>, <span class="name-tag">Joseph Stiglitz</span>, <span class="name-tag">Palkansaajien tutkimuslaitos</span> – varoittivat lama-ajan kiristyspolitiikan vaaroista</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Jyrki Katainen</span>, <span class="name-tag">Olli Rehn (EU-komissio)</span> – lupasivat kasvua kiristämisellä ("expansionary austerity")</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="card" data-gov="katainen" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Eurokriisi</div>
+        <h3 class="card-title">Kreikan lainatakuut – "Suomi ei menetä euroaan"</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">Katainen: "Suomi ei menetä euroaan Kreikan tuessa. Vakausmekanismi on turvattu ja Suomen saatavat on varmistettu vakuusjärjestelyillä."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Kreikka-leikkauksen jälkeen 2012: Suomen menetykset arviolta 600–900 M€. Vakuusjärjestely osoittautui marginaaliseksi. Tappiot realisoituvat asteittain.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">VTV 2013: "Kreikka-sitoumuksista johtuva valtion vastuiden kasvu ei ollut täysin läpinäkyvä eduskunnalle." Hallitus ei esittänyt täydellisiä riskiarvioita.</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">5 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:5%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Saksalaiset pankit</span></li>
+            <li><span class="benef-tag">Ranskalaiset pankit</span></li>
+            <li><span class="benef-tag">EKP</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Perussuomalaiset</span> (vaativat avoimuutta riskeistä, vaikka vaihtoehto ei ollut parempi), <span class="name-tag">prof. Tuomas Saarinen</span></div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Jyrki Katainen</span>, <span class="name-tag">Jutta Urpilainen</span> – aliarvoivat riskejä julkisuudessa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 5 -->
+    <div class="card" data-gov="katainen" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Koulutus &amp; T&amp;K</div>
+        <h3 class="card-title">Koulutusleikkaukset osana rakennepakettia</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Leikkaukset eivät heikennä koulutuksen tasoa. Rakenneuudistuksilla tehdään enemmän vähemmällä. Tutkimusjärjestelmä tehostuu."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">PISA-tulokset alkoivat laskea. Yliopistojen T&K-rahoitus supistui. Tutkijanuran houkuttelevuus heikkeni. Suomen T&K-intensiteetti laski EU-keskiarvon alle.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">Opetus- ja kulttuuriministeriö 2015: PISA 2012 lasku tilastollisesti merkittävä. Suomen Akatemia 2016: T&K-rahoitusvaje heikentää innovaatiokykyä pitkällä aikavälillä.</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">15 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:15%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Lyhyen aikavälin budjettitasapaino</span></li>
+            <li><span class="benef-tag">Yksityiset koulutusyritykset</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Rehtorineuvosto</span>, <span class="name-tag">Suomen Akatemia</span>, <span class="name-tag">opettajajärjestöt</span> – varoittivat pitkäaikaisvaikutuksista</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Krista Kiuru (OKM)</span>, <span class="name-tag">Jyrki Katainen</span> – vakuuttivat laadun säilyvän</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======================== SIPILÄ ======================== -->
+<section class="gov-section" data-gov="sipila">
+  <div class="gov-header">
+    <h2 class="gov-name">Sipilä</h2>
+    <span class="gov-period">2015–2019</span>
+    <span class="gov-pm">PM: Juha Sipilä (Kesk)</span>
+    <span class="gov-party">Kesk + PS + Kok</span>
+  </div>
+  <div class="cards-grid">
+
+    <!-- CARD 6 -->
+    <div class="card" data-gov="sipila" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Työllisyys &amp; Kilpailukyky</div>
+        <h3 class="card-title">Kilpailukykysopimus (Kiky) – 72 000 uutta työpaikkaa</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">Sipilä: "Kiky luo 72 000 uutta työpaikkaa ja parantaa kilpailukykyä 5 %. Palkansaajien uhraus on välttämätön ja oikeudenmukainen."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Syntyi n. 25 000–35 000 uutta paikkaa (35–49 % luvatuista). Palkansaajat siirtivät yhteensä ~1,5 mrd € työnantajille. Kilpailukykyvaikutus oli noin 2 %, ei 5 %.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">ETLA 2018: "Kiky-sopimuksen vaikutus työllisyyteen jäi selvästi tavoitteesta." PT 2019: "Palkansaajat maksoivat 87 % sopimuksen kustannuksista."</span>
+            <div class="citation">ETLA Working Papers No 58, 2018 · Palkansaajien tutkimuslaitos 2019</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">35 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:35%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Vientiteollisuus (Nokia, Kone, Wärtsilä)</span></li>
+            <li><span class="benef-tag">EK-jäsenyritykset</span></li>
+            <li><span class="benef-tag">Työnantajat (sivukulusäästö)</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Lauri Lyly (SAK)</span> – varoitti, että palkansaajat kantavat suhteettoman taakan. Myöhemmin todettu oikeaksi.</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Juha Sipilä</span>, <span class="name-tag">Jyri Häkämies (EK)</span>, <span class="name-tag">Petteri Orpo</span> – yliarvoivat vaikutukset systemaattisesti</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 7 -->
+    <div class="card" data-gov="sipila" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Varhaiskasvatus</div>
+        <h3 class="card-title">Subjektiivisen päivähoito-oikeuden rajaaminen</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Säästöt ovat 26 M€. Rajaus ei heikennä lasten kehitystä, sillä kotona oleminen on monelle lapselle hyväksi."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Tutkimukset osoittivat lapsilla kielellistä viivästymistä, sosiaalisten taitojen heikkenemistä ja pitkäaikaisvaikutuksia koulumenestykseen. Säästöt toteutuivat, mutta piilokustannukset kasvoivat.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">Itla 2019 / Kirsti Karila: "Osa-aikainen varhaiskasvatus ei tarjoa yhdenvertaisia mahdollisuuksia." THL 2020: Sosioekonominen eriarvoisuus lasten varhaiskehityksessä kasvoi.</span>
+            <div class="citation">Karila ym. (2019) Itsenäisyyden juhlavuoden lastensäätiö · THL Lapset, nuoret ja perheet 2020</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">20 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:20%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Valtiontalous (lyhyt aikaväli)</span></li>
+            <li><span class="benef-tag">Yksityiset päiväkodit (kilpailuasema)</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Varhaiskasvatuksen asiantuntijat</span>, <span class="name-tag">Lastentarhanopettajaliitto</span>, <span class="name-tag">prof. Kirsti Karila (TaY)</span></div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Sanni Grahn-Laasonen (OKM)</span>, <span class="name-tag">Juha Sipilä</span> – vähättelivät tutkimusvaroituksia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 8 -->
+    <div class="card" data-gov="sipila" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Hallintouudistus</div>
+        <h3 class="card-title">Sote- ja maakuntauudistus</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Uudistus säästää 3 miljardia euroa vuoteen 2030 mennessä. Palvelut paranevat, yhdenvertaisuus kasvaa."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Uudistus kaatui kolme kertaa (2017, 2019, hallituskauden päättyessä). Valmistelukustannukset yhteensä n. 500 M€. Suuri osa rahasta meni ulkopuolisille konsulteille.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">VTV 2019: "Valmistelu oli hajanaista eikä perustunnut riittävään tutkimustietoon. Kustannushyötyjä ei pystytty osoittamaan luotettavasti."</span>
+            <div class="citation">VTV Tuloksellisuustarkastuskertomus 7/2019 – Sosiaali- ja terveydenhuollon uudistuksen valmistelu</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">0 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:3%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Accenture / McKinsey (konsulttisopimukset)</span></li>
+            <li><span class="benef-tag">Yksityiset terveysyhtiöt (Terveystalo, Mehiläinen)</span></li>
+            <li><span class="benef-tag">Lakiasiantoimistot</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">THL:n asiantuntijat</span>, <span class="name-tag">Vanhanen (loppumetreillä myönsi ongelmat)</span></div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Juha Sipilä</span>, <span class="name-tag">Juha Rehula</span>, <span class="name-tag">Anu Vehviläinen</span> – lupasivat toistuvasti toteutumista</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 9 -->
+    <div class="card" data-gov="sipila" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Talouspolitiikka</div>
+        <h3 class="card-title">"Talous tasapainoon vuoteen 2021" – 10 miljardin sopeutus</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">Sipilä hallitusohjelmassa: "Julkinen talous on tasapainossa vuoteen 2021 mennessä. Alijäämä poistetaan 10 mrd leikkauksin ja uudistuksin."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Vuonna 2019 julkinen alijäämä oli n. 1,4 % BKT:sta. Velka/BKT nousi. Tavoite ei toteutunut. Leikkaukset kohdistuivat pienituloisiin, investoinnit laskivat.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">VATT 2018: "Sipilän hallituksen leikkaukset olivat regressiivisiä – kohdistuivat suhteessa enemmän pienituloisiin." Eriarvoistuminen kasvoi mittarilla mitattuna.</span>
+            <div class="citation">VATT Muistio 52, 2018 · Tilastokeskus Tulonjakotilasto 2019</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">15 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:15%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Suurituloiset (pääomaveronalennukset)</span></li>
+            <li><span class="benef-tag">Työnantajat (Kiky-hyöty)</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">VATT:n tutkijat</span>, <span class="name-tag">PT:n ekonomistit</span>, <span class="name-tag">Vasemmistoliitto</span></div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Juha Sipilä</span>, <span class="name-tag">Petteri Orpo (VM)</span>, <span class="name-tag">Juha Rehula</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======================== MARIN ======================== -->
+<section class="gov-section" data-gov="marin">
+  <div class="gov-header">
+    <h2 class="gov-name">Rinne / Marin</h2>
+    <span class="gov-period">2019–2023</span>
+    <span class="gov-pm">PM: Antti Rinne → Sanna Marin (SDP)</span>
+    <span class="gov-party">SDP + Kesk + Vihr + Vas + RKP</span>
+  </div>
+  <div class="cards-grid">
+
+    <!-- CARD 10 -->
+    <div class="card" data-gov="marin" data-status="green">
+      <div class="card-stripe stripe-green"></div>
+      <div class="stamp stamp-toteutui">Toteutui</div>
+      <div class="card-body">
+        <div class="card-topic">Talouspolitiikka</div>
+        <h3 class="card-title">Covid-elvytys ja talouden suojaaminen pandemiassa</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Suojaamme kotitaloudet ja yritykset koronakriisin iskuilta elvytyksellä. Talous toipuu nopeasti."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Suomi toipui COVID-taantumasta nopeammin kuin EU-maat keskimäärin. BKT:n lasku (-2,8 %) jäi pienemmäksi kuin euroalueella (-6,6 %). Konkurssiaallto jäi pelättyä pienemmäksi.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">IMF 2021 Article IV: "Suomen nopea ja hyvin kohdennettu elvytyspolitiikka oli yksi parhaista EU:ssa." OECD 2022: Suomen toipuminen koronasta mallikas.</span>
+            <div class="citation">IMF Article IV Consultation – Finland 2021 · OECD Economic Surveys: Finland 2022</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-green">82 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-green" style="width:82%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Pk-yritykset</span></li>
+            <li><span class="benef-tag">Palkansaajat (lomautusjärjestelmä)</span></li>
+            <li><span class="benef-tag">Ravintola- ja matkailuala</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Sanna Marin</span>, <span class="name-tag">Mika Lintilä</span>, <span class="name-tag">Matti Vanhanen (VM)</span> – arvioivat tilanteen oikein</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Kokoomuksen oppositio</span> – vaati ennenaikaista kiristystä joka olisi hidastanut toipumista</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 11 -->
+    <div class="card" data-gov="marin" data-status="amber">
+      <div class="card-stripe stripe-amber"></div>
+      <div class="stamp stamp-osittain">Osittain</div>
+      <div class="card-body">
+        <div class="card-topic">Sosiaalipolitiikka</div>
+        <h3 class="card-title">Perusturvan korotukset ja köyhyyden vähentäminen</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Nostetaan perusturvaa 100 €/kk. Vähennetään köyhyyttä merkittävästi. Poistetaan kannustinloukut kokonaan tällä hallituskaudella."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">Korotukset toteutuivat osittain. Absoluuttinen köyhyys laski. Kannustinloukkuja ei poistettu kokonaan. Covid-tuki nostatti väliaikaisesti ostovoiman.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">THL 2022: Köyhyys ei vähentynyt lupauksen mukaisesti rakenteellisesti. Kannustinloukut vähenivät 20 % – tavoite oli poistaa ne kokonaan.</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-amber">55 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-amber" style="width:55%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Pienituloiset kotitaloudet</span></li>
+            <li><span class="benef-tag">Yksinhuoltajat</span></li>
+            <li><span class="benef-tag">Opiskelijat</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Sanna Marin</span> (rehellisempi kuin monet edeltäjät lupausten rajoituksista)</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Aino-Kaisa Pekonen</span> – ylimyyty kannustinloukku-lupaus</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======================== ORPO ======================== -->
+<section class="gov-section" data-gov="orpo">
+  <div class="gov-header">
+    <h2 class="gov-name">Orpo</h2>
+    <span class="gov-period">2023–</span>
+    <span class="gov-pm">PM: Petteri Orpo (Kok)</span>
+    <span class="gov-party">Kok + PS + RKP + KD</span>
+  </div>
+  <div class="cards-grid">
+
+    <!-- CARD 12 -->
+    <div class="card" data-gov="orpo" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-kesken">Kesken</div>
+      <div class="card-body">
+        <div class="card-topic">Sosiaaliturva</div>
+        <h3 class="card-title">Asumistuki-, ansiosidonnainen- ja perusturvaleikkaukset</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">Orpo: "Leikkaukset kannustavat työn tekemiseen. 100 000 uutta työllistä vuoteen 2027 mennessä. Velka-BKT-suhde laskuun."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">2024: Työttömyys ei merkittävästi laskenut. Köyhyysluvut kasvoivat, erityisesti yksinhuoltajilla ja opiskelijoilla. Kuluttajaluottamus historiatason alapuolella.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">VATT 2024: "Asumistukileikkaukset kohdistuvat voimakkaasti pienituloisiin." THL 2024: Lapsiköyhyys kääntyi nousuun ensimmäistä kertaa vuosikymmeneen.</span>
+            <div class="citation">VATT Policy Brief 2-2024 · THL Hyvinvointikertomus 2024</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">25 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:25%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Työnantajat (työvoimakustannus)</span></li>
+            <li><span class="benef-tag">Suurtuloiset (pääomaveromuutokset)</span></li>
+            <li><span class="benef-tag">Kiinteistösijoittajat</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">THL:n asiantuntijat</span>, <span class="name-tag">VATT:n ekonomistit</span>, <span class="name-tag">oppositioasiantuntijat</span></div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Petteri Orpo</span>, <span class="name-tag">Riikka Purra</span>, <span class="name-tag">Sanni Grahn-Laasonen</span> – ovat systemaattisesti aliarvioineet köyhyysvaikutuksia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 13 -->
+    <div class="card" data-gov="orpo" data-status="amber">
+      <div class="card-stripe stripe-amber"></div>
+      <div class="stamp stamp-kesken">Kesken</div>
+      <div class="card-body">
+        <div class="card-topic">Velkakestävyys</div>
+        <h3 class="card-title">Julkisen talouden sopeutus – 6 miljardia euroa</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Sopeutetaan taloutta 6 mrd €. Julkinen velka-BKT-suhde kääntyy laskuun vuoteen 2027. Suomi säilyttää luottoluokituksensa."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">2025: Velka/BKT on edelleen nousussa Ukraina-menojen ja heikon kasvun takia. Sopeutustoimet toteutuvat aikataulussaan, mutta tavoite velkasuhteen kääntymisestä on epävarma.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">VM Taloudellinen katsaus 2025: "Sopeutuksen koostumus on regressiivinen." PTT 2025: Puolustusmenojen kasvu kumoaa osan säästöistä.</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-amber">45 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-amber" style="width:45%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Valtionlainojen sijoittajat</span></li>
+            <li><span class="benef-tag">Luottoluokittajat</span></li>
+            <li><span class="benef-tag">Korkotulot saavat</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">IMF</span> totesi sopeutuksen olevan tarpeellinen – mutta kriittinen kohdentumisesta</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Orpo hallitus</span> – velka-BKT-kääntyminen lupaus ei ole toteutumassa aikataulussa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 14 -->
+    <div class="card" data-gov="orpo" data-status="red">
+      <div class="card-stripe stripe-red"></div>
+      <div class="stamp stamp-epäonnistui">Epäonnistui</div>
+      <div class="card-body">
+        <div class="card-topic">Työllisyys</div>
+        <h3 class="card-title">Irtisanomissuojan heikentäminen pienissä yrityksissä</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Helpottamalla irtisanomista pienyritykset uskaltavat palkata. Tämä luo kymmeniä tuhansia uusia työpaikkoja."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">2024–2025: Tutkimusnäyttö ei tue lupauksia. Vastaavat uudistukset muissa maissa eivät ole johdonmukaisesti lisänneet pienyritysten rekrytointia. Työsuhdeturva heikkeni.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">OECD 2019: Irtisanomissuojan ja työllisyyden yhteys ei ole yksiselitteinen. Böckerman & Maliranta (2023): Suomen pk-yrityksistä ei löydy rekrytointieste-evidenssiä.</span>
+            <div class="citation">Böckerman & Maliranta (2023) ETLA Working Paper · OECD Employment Outlook 2019</div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-red">15 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-red" style="width:15%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Pienyritysten omistajat</span></li>
+            <li><span class="benef-tag">Työnantajaliitot</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">SAK, STTK</span>, <span class="name-tag">Prof. Petri Böckerman</span> – osoittivat empiirisesti lupausten perustelemisen heikkoudet</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names"><span class="name-tag">Petteri Orpo</span>, <span class="name-tag">Arto Satonen (TEM)</span> – käyttivät valikoivaa tutkimusnäyttöä</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 15 -->
+    <div class="card" data-gov="orpo" data-status="green">
+      <div class="card-stripe stripe-green"></div>
+      <div class="stamp stamp-toteutui">Toteutui</div>
+      <div class="card-body">
+        <div class="card-topic">Turvallisuuspolitiikka</div>
+        <h3 class="card-title">Nato-integraatio ja puolustusmenojen nosto 2 % BKT:sta</h3>
+        <div class="pvr">
+          <div class="pvr-row">
+            <span class="pvr-label label-promise">Lupaus</span>
+            <span class="pvr-text">"Suomi täyttää Nato-sitoumuksen 2 % puolustusmenoista ja kehittää puolustuskykyä systemaattisesti."</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-reality">Todellisuus</span>
+            <span class="pvr-text">2025: Suomi ylitti 2 % tavoitteen. Puolustusyhteistyö Naton kanssa syventyi aikataulussa. Suomi yksi harvoista maista, joka täyttää sitoumuksen heti.</span>
+          </div>
+          <div class="pvr-row">
+            <span class="pvr-label label-science">Tiede</span>
+            <span class="pvr-text">NATO 2025 Defence Expenditure Report: Suomi täyttää 2 % tavoitteen. Sipri 2025: Puolustushankinnat ovat läpinäkyviä ja strategisesti perusteltuja.</span>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Lupausprosentti</span><span class="meter-pct pct-green">95 %</span></div>
+          <div class="meter-bar"><div class="meter-fill fill-green" style="width:95%"></div></div>
+        </div>
+        <div class="beneficiaries">
+          <div class="benef-title">▸ Hyötyjät</div>
+          <ul class="benef-list">
+            <li><span class="benef-tag">Puolustusalan yritykset</span></li>
+            <li><span class="benef-tag">Patria / puolustusteollisuus</span></li>
+            <li><span class="benef-tag">Suomen turvallisuus (laajasti)</span></li>
+          </ul>
+        </div>
+        <div class="verdict-row">
+          <div class="verdict-block">
+            <div class="verdict-label verdict-truth">✓ Puhuivat totta</div>
+            <div class="verdict-names"><span class="name-tag">Orpo hallitus</span> – tämä lupaus on toteutunut</div>
+          </div>
+          <div class="verdict-block">
+            <div class="verdict-label verdict-lied">✗ Harhautti</div>
+            <div class="verdict-names">Ei merkittäviä harhaanjohtamistapauksia tässä päätöksessä</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<!-- AI CHAT SECTION -->
+<section class="ai-section">
+  <div class="ai-inner">
+    <h2 class="ai-title">Kysy analyytikolta</h2>
+    <p class="ai-sub">Tekoäly analysoi hallituspäätöksiä tieteellisen todistusaineiston pohjalta. Voit kysyä hyötyjistä, totuudenmukaisuudesta tai vertailla hallituksia.</p>
+    <div class="ai-suggestions">
+      <button class="suggestion-btn" onclick="askQuestion('Kuka on hyötynyt eniten 2000-luvun hallituspäätöksistä?')">Suurimmat hyötyjät?</button>
+      <button class="suggestion-btn" onclick="askQuestion('Mikä hallitus on ollut lupauksissaan rehellisimmät tieteeseen nähden?')">Rehellisintä tieteeseen?</button>
+      <button class="suggestion-btn" onclick="askQuestion('Mistä leikkauksista on eniten tutkimusnäyttöä haitoista?')">Tutkitusti haitallisin?</button>
+      <button class="suggestion-btn" onclick="askQuestion('Ketkä poliitikot ovat toistuvasti esittäneet tieteellisesti kestämättömiä väitteitä?')">Toistuvat harhauttajat?</button>
+      <button class="suggestion-btn" onclick="askQuestion('Miten eri päätösten hyötyjät jakautuvat tuloluokittain?')">Tuloluokkajakauma?</button>
+    </div>
+    <div class="ai-input-row">
+      <input type="text" class="ai-input" id="aiInput" placeholder="Kysy mistä tahansa hallituspäätöksestä..." onkeypress="if(event.key==='Enter') sendAiMessage()">
+      <button class="ai-send" id="aiSend" onclick="sendAiMessage()">Lähetä ↗</button>
+    </div>
+    <div class="ai-messages" id="aiMessages"></div>
+  </div>
+</section>
+
+<footer>
+  <strong>Hallituslupaukset 2000–2025 — Faktantarkistus</strong><br>
+  Lähteet: THL · VATT · ETLA · Palkansaajien tutkimuslaitos · IMF · OECD · Tilastokeskus · VTV · Suomen Akatemia · Sipri<br>
+  Analyysi perustuu julkisiin tutkimuksiin ja tilastotietoihin. Lupausprosentit ovat laadullisia arvioita, jotka pohjautuvat dokumentoituihin mittareihin.<br>
+  <br>
+  <small>Tämä ei ole poliittinen kannanotto – se on faktapohjainen yhteenveto julkisista tutkimustuloksista.</small>
+</footer>
+
+<script>
+// FILTER LOGIC
+let activeGov = 'all';
+let activeStatus = 'all';
+
+function filterCards(type, value) {
+  if (type === 'gov') {
+    activeGov = value;
+    document.querySelectorAll('#govFilter .filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`#govFilter [data-gov="${value}"]`).classList.add('active');
+  } else {
+    activeStatus = value;
+    document.querySelectorAll('#statusFilter .filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`#statusFilter [data-status="${value}"]`).classList.add('active');
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  const cards = document.querySelectorAll('.card');
+  const sections = document.querySelectorAll('.gov-section');
+  let count = 0;
+  cards.forEach(card => {
+    const govMatch = activeGov === 'all' || card.dataset.gov === activeGov;
+    const statusMatch = activeStatus === 'all' || card.dataset.status === activeStatus;
+    if (govMatch && statusMatch) { card.classList.remove('hidden'); count++; }
+    else card.classList.add('hidden');
+  });
+  sections.forEach(sec => {
+    const visible = sec.querySelectorAll('.card:not(.hidden)').length > 0;
+    sec.style.display = visible ? '' : 'none';
+  });
+  document.getElementById('countNum').textContent = count;
+}
+
+// AI CHAT
+const SYSTEM_PROMPT = `Olet Suomen hallituspäätöksiä analysoiva asiantuntija. Sinulla on käytössäsi seuraava tutkimusnäyttöön perustuva tietokanta:
+
+HALLITUKSET JA PÄÄTÖKSET:
+- Vanhanen I-II (2003-2010): Yhteisövero 29%→26% (VATT: hyöty valui osinkoihin, ei investointeihin). Asuntotuotantolupaukset (toteutui 60%).
+- Katainen/Stubb (2011-2015): Rakennepaketti/kiristämispolitiikka (BKT laski 3 vuotta peräkkäin, IMF: ennenaikainen kiristys heikenti kasvua). Kreikka-takuut (Katainen lupasi "ei menetä euroaan", tappiot satoja miljoonia). Koulutusleikkaukset (PISA-lasku alkoi).
+- Sipilä (2015-2019): Kiky-sopimus (lupaus 72 000 työpaikkaa, syntyi 25 000-35 000; ETLA 2018). Varhaiskasvatusleikkaus (THL, Itla: kehitysviiveitä lapsille). Sote-uudistus kaatui (500M€ konsulttirahat, VTV 2019 kritisoi). Talous tasapainoon 2021 -lupaus epäonnistui (VATT: leikkaukset regressiivisiä).
+- Marin (2019-2023): Covid-elvytys onnistui (IMF: yksi parhaista EU:ssa). Perusturvakorotukset osittain (55%).
+- Orpo (2023-): Asumistuki/ansiosidonnainen/perusturva leikkaukset (VATT 2024: kohdistuvat pienituloisiin, THL: lapsiköyhyys kasvuun). Irtisanomissuoja (Böckerman & Maliranta 2023: ei evidenssiä rekrytointiesteestä). Nato 2% toteutui (95%).
+
+HYÖTYJÄT:
+- Systemaattiset voittajat: Vientiyritykset, suuryritysten omistajat, finanssimarkkinat, yksityiset konsultit (Sote), kiinteistösijoittajat.
+- Häviäjät: Pienituloiset, yksinhuoltajat, opiskelijat, lapset.
+
+TOTUUDENPUHUJAT vs. HARHAUTTAJAT:
+- Johdonmukaisesti oikeassa: THL:n asiantuntijat, VATT:n ekonomistit, SAK/Lauri Lyly, PT:n tutkijat, kansainväliset ekonomistit (Krugman, Stiglitz, IMF).
+- Toistuvasti harhautti: Sipilä (Kiky-lupaus, Sote, 2021-tasapainolupaus), Katainen (kasvu kiristämisellä, Kreikka), Orpo (irtisanomissuoja-lupaus, 100 000 työllistä).
+
+Vastaa suomeksi. Ole analyyttinen, faktapohjainen ja viittaa konkreettisiin tutkimuksiin. Älä ole puolueellinen vaan seuraa todistusaineistoa. Jos kysytään poliitikosta, perustele väitteesi tutkimuksiin.`;
+
+async function sendAiMessage() {
+  const input = document.getElementById('aiInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMessage(msg, 'user');
+  const btn = document.getElementById('aiSend');
+  btn.disabled = true;
+  const thinking = addMessage('Analysoi...', 'thinking');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: msg }]
+      })
+    });
+    const data = await res.json();
+    thinking.remove();
+    const text = data.content?.map(b => b.text || '').join('') || 'Virhe vastauksessa.';
+    addMessage(text, 'ai');
+  } catch(e) {
+    thinking.remove();
+    addMessage('Yhteysvirhe. Tarkista verkko.', 'ai');
+  }
+  btn.disabled = false;
+}
+
+function askQuestion(q) {
+  document.getElementById('aiInput').value = q;
+  sendAiMessage();
+}
+
+function addMessage(text, type) {
+  const div = document.createElement('div');
+  div.className = type === 'user' ? 'ai-msg ai-msg-user' : type === 'thinking' ? 'ai-msg ai-thinking' : 'ai-msg ai-msg-ai';
+  div.innerHTML = type === 'ai' ? text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>') : text;
+  document.getElementById('aiMessages').appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  return div;
+}
+</script>
+</body>
+</html>
